@@ -146,7 +146,7 @@ Cafe_Ordering_System/
 
 ### Admin Account
 - **Username**: admin
-- **Password**: admin123
+- **Password**: gamer071
 - **Access**: http://127.0.0.1:8000/dashboard/
 
 ## 🎯 URL Routes
