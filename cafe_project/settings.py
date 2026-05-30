@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-%^0!myk=by4mbrw)p*6^!te%!5^0-z=%0l24mlvu$jeot^(q*)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "cafe-ordering-system-1-uumo.onrender.com",
+    ".onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
