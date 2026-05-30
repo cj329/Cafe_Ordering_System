@@ -32,6 +32,10 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://cafe-ordering-system-1-uumo.onrender.com",
+    "https://*.onrender.com",
+]
 
 # Application definition
 
