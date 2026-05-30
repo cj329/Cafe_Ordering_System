@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - Cafe Ordering System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Shopping Cart</h2>
+
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'menu:detail' item.item.pk %}" class="text-decoration-none">
+                                    {{ item.item.name }}
+                                </a>
+                            </td>
+                            <td>₱{{ item.item.price }}</td>
+                            <td>
+                                <form method="post" action="{% url 'orders:update_cart' item.item.pk %}"
+                                    class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity" class="form-control d-inline"
+                                        style="width: 80px;" value="{{ item.quantity }}" min="1">
+                                    <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                                </form>
+                            </td>
+                            <td><strong>₱{{ item.total }}</strong></td>
+                            <td>
+                                <a href="{% url 'orders:remove_from_cart' item.item.pk %}"
+                                    class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Items: </span>
+                        <strong>{{ cart_count }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <h5>Total:</h5>
+                        <h5 class="text-brown">₱{{ total_price }}</h5>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-primary w-100 btn-lg">
+                        <i class="fas fa-credit-card"></i> Proceed to Checkout
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary w-100 btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Login to Checkout
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'menu:menu_list' %}" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="fas fa-shopping-bag"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i> Your cart is empty!
+        <a href="{% url 'menu:menu_list' %}">Start shopping now</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

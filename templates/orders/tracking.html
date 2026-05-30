@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Order - Cafe Ordering System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Order Tracking</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Order Number</h6>
+                            <h5>{{ order.order_number }}</h5>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h6 class="text-muted">Current Status</h6>
+                            <h5>
+                                {% if order.status == 'pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% elif order.status == 'confirmed' %}
+                                <span class="badge bg-info">Confirmed</span>
+                                {% elif order.status == 'preparing' %}
+                                <span class="badge bg-primary">Preparing</span>
+                                {% elif order.status == 'ready' %}
+                                <span class="badge bg-success">Ready for Pickup</span>
+                                {% elif order.status == 'out_for_delivery' %}
+                                <span class="badge bg-info">Out for Delivery</span>
+                                {% elif order.status == 'delivered' %}
+                                <span class="badge bg-success">Delivered</span>
+                                {% elif order.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </h5>
+                        </div>
+                    </div>
+
+                    <!-- Progress Timeline -->
+                    <div class="timeline-container mt-4">
+                        {% if order.status == 'cancelled' %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i> This order has been cancelled.
+                        </div>
+                        {% else %}
+                        <div class="timeline">
+                            {% with current_step=order.get_status_step %}
+                            <!-- Step 1: Pending -->
+                            <div
+                                class="timeline-item {% if current_step >= 1 %}completed{% endif %} {% if current_step == 1 %}active{% endif %}">
+                                <div class="timeline-marker">
+                                    {% if current_step > 1 %}<i class="fas fa-check"></i>{% else %}1{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Order Placed</h6>
+                                    <p class="text-muted small mb-0">Your order has been received.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Confirmed -->
+                            <div
+                                class="timeline-item {% if current_step >= 2 %}completed{% endif %} {% if current_step == 2 %}active{% endif %}">
+                                <div class="timeline-marker">
+                                    {% if current_step > 2 %}<i class="fas fa-check"></i>{% else %}2{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Confirmed</h6>
+                                    <p class="text-muted small mb-0">Order accepted by our staff.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Preparing -->
+                            <div
+                                class="timeline-item {% if current_step >= 3 %}completed{% endif %} {% if current_step == 3 %}active{% endif %}">
+                                <div class="timeline-marker">
+                                    {% if current_step > 3 %}<i class="fas fa-check"></i>{% else %}3{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Preparing</h6>
+                                    <p class="text-muted small mb-0">Our kitchen is preparing your food.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Ready -->
+                            <div
+                                class="timeline-item {% if current_step >= 4 %}completed{% endif %} {% if current_step == 4 %}active{% endif %}">
+                                <div class="timeline-marker">
+                                    {% if current_step > 4 %}<i class="fas fa-check"></i>{% else %}4{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Ready for Pickup</h6>
+                                    <p class="text-muted small mb-0">Your order is ready to go!</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 5: Delivery -->
+                            <div
+                                class="timeline-item {% if current_step >= 5 %}completed{% endif %} {% if current_step == 5 %}active{% endif %}">
+                                <div class="timeline-marker">
+                                    {% if current_step > 5 %}<i class="fas fa-check"></i>{% else %}5{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Out for Delivery</h6>
+                                    <p class="text-muted small mb-0">Our rider is on the way.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 6: Delivered -->
+                            <div
+                                class="timeline-item {% if current_step >= 6 %}completed{% endif %} {% if current_step == 6 %}active{% endif %}">
+                                <div class="timeline-marker">
+                                    {% if current_step > 6 %}<i class="fas fa-check"></i>{% else %}6{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Delivered</h6>
+                                    <p class="text-muted small mb-0">Enjoy your meal!</p>
+                                </div>
+                            </div>
+                            {% endwith %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <style>
+                        .timeline {
+                            position: relative;
+                            padding-left: 3rem;
+                        }
+
+                        .timeline::before {
+                            content: '';
+                            position: absolute;
+                            left: 1.15rem;
+                            top: 0;
+                            bottom: 0;
+                            width: 2px;
+                            background: #e9ecef;
+                        }
+
+                        .timeline-item {
+                            position: relative;
+                            padding-bottom: 2rem;
+                        }
+
+                        .timeline-item:last-child {
+                            padding-bottom: 0;
+                        }
+
+                        .timeline-marker {
+                            position: absolute;
+                            left: -3rem;
+                            width: 2.3rem;
+                            height: 2.3rem;
+                            border-radius: 50%;
+                            background: #fff;
+                            border: 2px solid #dee2e6;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: bold;
+                            color: #6c757d;
+                            z-index: 1;
+                        }
+
+                        .timeline-item.completed .timeline-marker {
+                            background: #28a745;
+                            border-color: #28a745;
+                            color: #fff;
+                        }
+
+                        .timeline-item.active .timeline-marker {
+                            background: #007bff;
+                            border-color: #007bff;
+                            color: #fff;
+                            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+                        }
+
+                        .timeline-item.completed::before {
+                            content: '';
+                            position: absolute;
+                            left: -1.85rem;
+                            top: 2.3rem;
+                            height: calc(100% - 2.3rem);
+                            width: 2px;
+                            background: #28a745;
+                            z-index: 0;
+                        }
+                    </style>
+                </div>
+            </div>
+
+            <!-- Order Details -->
+            <div class="card mt-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Delivery Address</h6>
+                            <p class="mb-3">
+                                {{ order.full_name }}<br>
+                                {{ order.address }}<br>
+                                {{ order.phone }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Estimated Delivery</h6>
+                            <p class="mb-3">{{ order.estimated_delivery|date:'M d, Y - h:i A' }}</p>
+                            <h6 class="text-muted">Payment Method</h6>
+                            <p class="mb-3">
+                                {{ order.get_payment_method_display }}
+                                {% if order.payment_method == 'online' and order.online_payment_method %}
+                                ({{ order.get_online_payment_method_display }})
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="text-muted mb-3">Items in Your Order</h6>
+                    <div class="row">
+                        {% for item in order.items.all %}
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-2">
+                                <h6>{{ item.item.name }}</h6>
+                                <p class="mb-1">
+                                    <span class="badge bg-light text-dark">Qty: {{ item.quantity }}</span>
+                                    <span class="float-end">₱{{ item.get_total }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <h5>Total Amount:</h5>
+                        <h5 class="text-brown">₱{{ order.total_price }}</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to My Orders
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

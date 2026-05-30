@@ -1,0 +1,262 @@
+```html
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Cafe Ordering System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+
+        <!-- Delivery Information -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Delivery Information</h5>
+                </div>
+
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <!-- Full Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                                    Full Name
+                                </label>
+
+                                {{ form.full_name }}
+
+                                {% if form.full_name.errors %}
+                                    <div class="text-danger">
+                                        {{ form.full_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    Email
+                                </label>
+
+                                {{ form.email }}
+
+                                {% if form.email.errors %}
+                                    <div class="text-danger">
+                                        {{ form.email.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                Phone Number
+                            </label>
+
+                            {{ form.phone }}
+
+                            {% if form.phone.errors %}
+                                <div class="text-danger">
+                                    {{ form.phone.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">
+                                Delivery Address
+                            </label>
+
+                            {{ form.address }}
+
+                            {% if form.address.errors %}
+                                <div class="text-danger">
+                                    {{ form.address.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="mb-4">
+                            <label class="form-label">Payment Method</label>
+
+                            <div>
+                                {% for value, label in form.payment_method.field.choices %}
+                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input payment-method-toggle"
+                                            type="radio"
+                                            name="payment_method"
+                                            value="{{ value }}"
+                                            id="payment_{{ value }}"
+                                            required
+                                        >
+
+                                        <label class="form-check-label" for="payment_{{ value }}">
+                                            {% if value == 'cash' %}
+                                                <i class="fas fa-money-bill"></i>
+                                            {% else %}
+                                                <i class="fas fa-credit-card"></i>
+                                            {% endif %}
+
+                                            {{ label }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Online Payment Options -->
+                        <div
+                            id="online_payment_details"
+                            class="mb-4 p-3 border rounded bg-light"
+                            style="display: none;"
+                        >
+                            <label
+                                for="{{ form.online_payment_method.id_for_label }}"
+                                class="form-label fw-bold"
+                            >
+                                Select Online Payment Method
+                            </label>
+
+                            {{ form.online_payment_method }}
+
+                            {% if form.online_payment_method.errors %}
+                                <div class="text-danger">
+                                    {{ form.online_payment_method.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-check"></i>
+                            Place Order
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="order-items-list" style="max-height: 400px; overflow-y: auto;">
+
+                        {% for item in cart_items %}
+                            <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+
+                                <div>
+                                    <h6>{{ item.item.name }}</h6>
+                                    <small class="text-muted">
+                                        Qty: {{ item.quantity }}
+                                    </small>
+                                </div>
+
+                                <div class="text-end">
+                                    <p class="mb-0">
+                                        ₱{{ item.item.price }}
+                                    </p>
+
+                                    <small class="text-muted">
+                                        ₱{{ item.total }}
+                                    </small>
+                                </div>
+
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">Your cart is empty.</p>
+                        {% endfor %}
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>₱{{ total_price }}</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Delivery:</span>
+                        <strong>Free</strong>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <h5>Total:</h5>
+                        <h5 class="text-brown">
+                            ₱{{ total_price }}
+                        </h5>
+                    </div>
+
+                    <div class="alert alert-info mt-4 mb-0">
+                        <i class="fas fa-info-circle"></i>
+                        Estimated delivery time: 30-45 minutes
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const paymentToggles = document.querySelectorAll('.payment-method-toggle');
+    const onlineDetails = document.getElementById('online_payment_details');
+    const onlineSelect = document.querySelector('select[name="online_payment_method"]');
+
+    function toggleOnlineDetails() {
+
+        const selectedMethod =
+            document.querySelector('input[name="payment_method"]:checked')?.value;
+
+        if (selectedMethod === 'online') {
+
+            onlineDetails.style.display = 'block';
+
+            if (onlineSelect) {
+                onlineSelect.setAttribute('required', 'required');
+            }
+
+        } else {
+
+            onlineDetails.style.display = 'none';
+
+            if (onlineSelect) {
+                onlineSelect.removeAttribute('required');
+            }
+        }
+    }
+
+    paymentToggles.forEach(toggle => {
+        toggle.addEventListener('change', toggleOnlineDetails);
+    });
+
+    // Initialize on page load
+    toggleOnlineDetails();
+
+});
+</script>
+{% endblock %}
+```

@@ -1,0 +1,501 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .search-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 32px 28px;
+            margin-bottom: 28px;
+            color: #fff;
+        }
+
+        .search-hero h2 {
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .search-hero p {
+            opacity: 0.85;
+            margin-bottom: 20px;
+        }
+
+        .search-input-wrap {
+            position: relative;
+        }
+
+        .search-input-wrap .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        .search-input-wrap input {
+            padding: 14px 16px 14px 46px;
+            font-size: 1rem;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .search-input-wrap input:focus {
+            outline: none;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+        }
+
+        .search-submit-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            background: #fff;
+            color: #667eea;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .search-submit-btn:hover {
+            background: #f0f4ff;
+        }
+
+        .results-summary {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .results-summary strong {
+            color: #333;
+        }
+
+        .result-section-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #495057;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-section-title .count-badge {
+            font-size: 0.75rem;
+            background: #667eea;
+            color: #fff;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-weight: 600;
+        }
+
+        .result-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: box-shadow 0.2s, transform 0.15s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+            transform: translateY(-1px);
+            text-decoration: none;
+            color: inherit;
+            border-color: #667eea;
+        }
+
+        .result-card .rc-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .rc-icon-order {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .rc-icon-menu {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .rc-icon-user {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .result-card .rc-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .result-card .rc-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .result-card .rc-sub {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .result-card .rc-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .result-card .rc-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: #adb5bd;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 14px;
+        }
+
+        .no-results p {
+            font-size: 1rem;
+        }
+
+        .empty-query {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-query i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 16px;
+        }
+
+        .empty-query h4 {
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-query p {
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        .section-wrap {
+            margin-bottom: 28px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <!-- LEFT SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <i class="fas fa-utensils"></i>
+                    <span>Food Order</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:dashboard' %}" class="nav-link">
+                            <i class="fas fa-chart-line"></i><span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:orders' %}" class="nav-link">
+                            <i class="fas fa-shopping-cart"></i><span>Orders</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:users' %}" class="nav-link">
+                            <i class="fas fa-users"></i><span>Registered Users</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:categories' %}" class="nav-link">
+                            <i class="fas fa-bookmark"></i><span>Food Category</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:menu_items' %}" class="nav-link">
+                            <i class="fas fa-utensils"></i><span>Food Menu</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:reports' %}" class="nav-link">
+                            <i class="fas fa-chart-bar"></i><span>Date-wise Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:search' %}" class="nav-link active">
+                            <i class="fas fa-search"></i><span>Search</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
+                    <div class="user-details">
+                        <p class="user-name">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="user-role">Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="admin-content">
+            <header class="admin-navbar">
+                <div class="navbar-left">
+                    <h1 class="page-title">Search</h1>
+                </div>
+                <div class="navbar-right">
+                    <a href="{% url 'accounts:logout' %}" class="navbar-link logout-btn">
+                        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                    </a>
+                </div>
+            </header>
+
+            <main class="page-content">
+
+                <!-- SEARCH HERO -->
+                <div class="search-hero">
+                    <h2><i class="fas fa-search" style="margin-right:10px;"></i>Global Search</h2>
+                    <p>Search across orders, menu items, and users instantly.</p>
+                    <form method="get" action="{% url 'dashboard:search' %}">
+                        <div class="d-flex gap-2">
+                            <div class="search-input-wrap flex-grow-1">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="search-input" name="q" value="{{ query }}"
+                                    placeholder="Search orders, items, customers, users…" autocomplete="off" autofocus>
+                            </div>
+                            <button type="submit" class="search-submit-btn">
+                                <i class="fas fa-arrow-right me-1"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if query %}
+                <!-- RESULTS SUMMARY -->
+                <div class="results-summary">
+                    {% if total_results > 0 %}
+                    Found <strong>{{ total_results }} result{{ total_results|pluralize }}</strong>
+                    for "<strong>{{ query }}</strong>"
+                    — {{ order_results|length }} order{{ order_results|length|pluralize }},
+                    {{ menu_results|length }} menu item{{ menu_results|length|pluralize }},
+                    {{ user_results|length }} user{{ user_results|length|pluralize }}
+                    {% else %}
+                    No results found for "<strong>{{ query }}</strong>". Try a different search term.
+                    {% endif %}
+                </div>
+
+                {% if total_results == 0 %}
+                <div class="no-results">
+                    <i class="fas fa-search-minus"></i>
+                    <p>Nothing matched "<strong>{{ query }}</strong>".</p>
+                    <p style="font-size:0.85rem;">Try searching by order number, customer name, phone, email, or menu
+                        item name.</p>
+                </div>
+                {% endif %}
+
+                <!-- ORDER RESULTS -->
+                {% if order_results %}
+                <div class="section-wrap">
+                    <div class="result-section-title">
+                        <i class="fas fa-shopping-cart" style="color:#667eea;"></i>
+                        Orders
+                        <span class="count-badge">{{ order_results|length }}</span>
+                    </div>
+                    {% for order in order_results %}
+                    <a href="{% url 'dashboard:order_detail' order.pk %}" class="result-card">
+                        <div class="rc-icon rc-icon-order">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="rc-main">
+                            <div class="rc-title">#{{ order.order_number }} — {{ order.full_name }}</div>
+                            <div class="rc-sub">
+                                <i class="fas fa-phone" style="font-size:0.7rem;"></i> {{ order.phone }}
+                                &nbsp;|&nbsp;
+                                <i class="fas fa-envelope" style="font-size:0.7rem;"></i> {{ order.email }}
+                                &nbsp;|&nbsp;
+                                <i class="fas fa-clock" style="font-size:0.7rem;"></i> {{ order.created_at|date:"M d, Y
+                                h:i A" }}
+                            </div>
+                        </div>
+                        <div class="rc-right">
+                            <div class="fw-bold text-success">₱{{ order.total_price }}</div>
+                            <span class="rc-badge badge
+                                {% if order.status == 'pending' %}bg-warning text-dark
+                                {% elif order.status == 'confirmed' %}bg-info
+                                {% elif order.status == 'preparing' %}bg-primary
+                                {% elif order.status == 'ready' %}bg-success
+                                {% elif order.status == 'out_for_delivery' %}bg-info
+                                {% elif order.status == 'delivered' %}bg-success
+                                {% elif order.status == 'cancelled' %}bg-danger
+                                {% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- MENU ITEM RESULTS -->
+                {% if menu_results %}
+                <div class="section-wrap">
+                    <div class="result-section-title">
+                        <i class="fas fa-utensils" style="color:#f5576c;"></i>
+                        Menu Items
+                        <span class="count-badge" style="background:#f5576c;">{{ menu_results|length }}</span>
+                    </div>
+                    {% for item in menu_results %}
+                    <a href="{% url 'dashboard:edit_menu_item' item.pk %}" class="result-card">
+                        <div class="rc-icon rc-icon-menu">
+                            <i class="fas fa-hamburger"></i>
+                        </div>
+                        <div class="rc-main">
+                            <div class="rc-title">{{ item.name }}</div>
+                            <div class="rc-sub">
+                                <i class="fas fa-tag" style="font-size:0.7rem;"></i> {{ item.category.name }}
+                                {% if item.description %}
+                                &nbsp;|&nbsp;{{ item.description|truncatechars:60 }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="rc-right">
+                            <div class="fw-bold">₱{{ item.price }}</div>
+                            {% if item.is_available %}
+                            <span class="rc-badge badge bg-success">Available</span>
+                            {% else %}
+                            <span class="rc-badge badge bg-secondary">Unavailable</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- USER RESULTS -->
+                {% if user_results %}
+                <div class="section-wrap">
+                    <div class="result-section-title">
+                        <i class="fas fa-users" style="color:#4facfe;"></i>
+                        Users
+                        <span class="count-badge" style="background:#4facfe;">{{ user_results|length }}</span>
+                    </div>
+                    {% for u in user_results %}
+                    <a href="{% url 'dashboard:users' %}?search={{ u.username }}" class="result-card">
+                        <div class="rc-icon rc-icon-user">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="rc-main">
+                            <div class="rc-title">{{ u.get_full_name|default:u.username }}</div>
+                            <div class="rc-sub">
+                                <i class="fas fa-at" style="font-size:0.7rem;"></i> {{ u.username }}
+                                &nbsp;|&nbsp;
+                                <i class="fas fa-envelope" style="font-size:0.7rem;"></i> {{ u.email|default:"No email"
+                                }}
+                                &nbsp;|&nbsp;
+                                Joined {{ u.date_joined|date:"M d, Y" }}
+                            </div>
+                        </div>
+                        <div class="rc-right">
+                            {% if u.is_staff %}
+                            <span class="rc-badge badge bg-warning text-dark">Admin</span>
+                            {% else %}
+                            <span class="rc-badge badge bg-secondary">Customer</span>
+                            {% endif %}
+                            <div style="font-size:0.75rem;color:#adb5bd;margin-top:2px;">
+                                {% with order_count=u.orders.count %}
+                                {{ order_count }} order{{ order_count|pluralize }}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% else %}
+                <!-- EMPTY STATE (no query yet) -->
+                <div class="empty-query">
+                    <i class="fas fa-search"></i>
+                    <h4>Start searching</h4>
+                    <p>Type a keyword above to search across orders, menu items, and users.</p>
+                    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                        <span
+                            style="background:#f0f4ff;color:#667eea;border-radius:20px;padding:6px 16px;font-size:0.85rem;font-weight:600;">Order
+                            number</span>
+                        <span
+                            style="background:#fff0f3;color:#f5576c;border-radius:20px;padding:6px 16px;font-size:0.85rem;font-weight:600;">Customer
+                            name</span>
+                        <span
+                            style="background:#e8f5e9;color:#28a745;border-radius:20px;padding:6px 16px;font-size:0.85rem;font-weight:600;">Phone
+                            number</span>
+                        <span
+                            style="background:#e3f2fd;color:#4facfe;border-radius:20px;padding:6px 16px;font-size:0.85rem;font-weight:600;">Email
+                            address</span>
+                        <span
+                            style="background:#fce4ec;color:#f093fb;border-radius:20px;padding:6px 16px;font-size:0.85rem;font-weight:600;">Menu
+                            item</span>
+                        <span
+                            style="background:#f3e5f5;color:#764ba2;border-radius:20px;padding:6px 16px;font-size:0.85rem;font-weight:600;">Username</span>
+                    </div>
+                </div>
+                {% endif %}
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-submit on Enter (already handled by form, but focus on load)
+        document.getElementById('search-input')?.focus();
+    </script>
+</body>
+
+</html>

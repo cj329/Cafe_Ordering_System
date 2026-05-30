@@ -1,0 +1,95 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}Food Categories{% endblock %}
+{% block nav_categories %}active{% endblock %}
+{% block page_title %}Food Categories{% endblock %}
+
+{% block navbar_extra %}
+<a href="{% url 'dashboard:add_category' %}" class="admin-btn admin-btn-primary">
+    <i class="fas fa-plus"></i> Add Category
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Categories Table -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h5><i class="fas fa-bookmark me-2"></i>Categories</h5>
+        <span class="badge bg-light text-dark">{{ categories.count }} categories</span>
+    </div>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Icon</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>
+                        <strong>{{ category.name }}</strong>
+                    </td>
+                    <td>
+                        <span style="font-size:0.85rem;color:#6c757d;">
+                            {{ category.description|truncatewords:10|default:"—" }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if category.icon %}
+                        <div
+                            style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;color:#fff;">
+                            <i class="fas fa-{{ category.icon }}"></i>
+                        </div>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'dashboard:menu_items' %}?category={{ category.id }}"
+                            class="badge bg-info text-decoration-none" title="Manage Items">
+                            {{ category.items.count }} items <i class="fas fa-external-link-alt ms-1"
+                                style="font-size:0.7rem;"></i>
+                        </a>
+                    </td>
+                    <td>
+                        {% if category.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'dashboard:edit_category' category.pk %}"
+                                class="admin-btn admin-btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'dashboard:delete_category' category.pk %}"
+                                class="admin-btn admin-btn-danger"
+                                onclick="return confirmDelete('Delete this category?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No categories yet. Click "Add Category" to create one.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

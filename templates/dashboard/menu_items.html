@@ -1,0 +1,74 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}Food Menu{% endblock %}
+{% block nav_menu_items %}active{% endblock %}
+{% block page_title %}Food Menu{% endblock %}
+
+{% block navbar_extra %}
+<a href="{% url 'dashboard:add_menu_item' %}" class="admin-btn admin-btn-primary">
+    <i class="fas fa-plus"></i> Add Item
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="filter-card">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Category</label>
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category == cat.id|slugify %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label fw-semibold">Search</label>
+            <input type="text" name="search" class="form-control" placeholder="Item name…" value="{{ search_query }}">
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="admin-btn admin-btn-primary flex-grow-1"><i class="fas fa-search"></i> Filter</button>
+            <a href="{% url 'dashboard:menu_items' %}" class="admin-btn admin-btn-secondary"><i class="fas fa-times"></i></a>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h5><i class="fas fa-utensils me-2"></i>Menu Items</h5>
+        <span class="badge bg-light text-dark">{{ items.count }} items</span>
+    </div>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr><th>Item</th><th>Category</th><th>Price</th><th>Available</th><th>Featured</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td><span class="badge" style="background:#f0f4ff;color:#667eea;">{{ item.category.name }}</span></td>
+                    <td class="fw-bold">₱{{ item.price }}</td>
+                    <td>
+                        {% if item.is_available %}<span class="badge bg-success">Available</span>
+                        {% else %}<span class="badge bg-danger">Out of Stock</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if item.is_featured %}<span class="badge bg-warning text-dark">Yes</span>
+                        {% else %}<span class="badge bg-light text-muted">No</span>{% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'dashboard:edit_menu_item' item.pk %}" class="admin-btn admin-btn-warning"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'dashboard:delete_menu_item' item.pk %}" class="admin-btn admin-btn-danger" onclick="return confirmDelete('Delete this item?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6"><div class="empty-state"><i class="fas fa-utensils"></i><p>No menu items yet.</p></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Menu - Cafe Ordering System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-3">Categories</h6>
+                    <div class="list-group">
+                        <a href="{% url 'menu:menu_list' %}"
+                            class="list-group-item {% if not selected_category %}active{% endif %}">
+                            All Categories
+                        </a>
+                        {% for category in categories %}
+                        <a href="{% url 'menu:menu_list' %}?category={{ category.id }}"
+                            class="list-group-item {% if selected_category|add:'0'|add:'0' == category.id %}active{% endif %}">
+                            <i class="fas fa-{{ category.icon }}"></i> {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    <hr>
+
+                    <h6 class="mb-3">Search</h6>
+                    <form method="get" action="{% url 'menu:menu_list' %}">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search items..."
+                                value="{{ search_query }}">
+                            <button class="btn btn-outline-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Our Menu</h2>
+                <span class="badge bg-primary">{{ items.count }} items</span>
+            </div>
+
+            {% if items %}
+            <div class="row">
+                {% for item in items %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card menu-card h-100 hover-shadow">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}"
+                            style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                            style="height: 200px;">
+                            <i class="fas fa-image text-light fa-3x"></i>
+                        </div>
+                        {% endif %}
+                        {% if item.is_featured %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning">Featured</span>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.name }}</h5>
+                            <p class="card-text text-muted small">{{ item.description|truncatewords:12 }}</p>
+                            <p class="text-muted small"><i class="fas fa-tag"></i> {{ item.category.name }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-brown mb-0">₱{{ item.price }}</span>
+                                <div>
+                                    <a href="{% url 'menu:detail' item.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-info-circle"></i> No items found. Try adjusting your filters.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

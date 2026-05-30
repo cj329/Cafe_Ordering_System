@@ -1,0 +1,107 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}{% if category %}Edit{% else %}Add{% endif %} Category{% endblock %}
+{% block nav_categories %}active{% endblock %}
+{% block page_title %}{% if category %}Edit{% else %}New{% endif %} Category{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:20px;">
+    <a href="{% url 'dashboard:categories' %}" class="admin-btn admin-btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Categories
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5><i class="fas fa-{% if category %}edit{% else %}plus{% endif %} me-2"></i>{% if category %}Edit{% else %}Add New{% endif %} Category</h5>
+            </div>
+            <div class="admin-card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Category Name *</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ category.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="4">{{ category.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="icon" class="form-label fw-semibold">Icon (Font Awesome)</label>
+                        <input type="text" id="icon" name="icon" class="form-control" placeholder="e.g., coffee, utensils, leaf" value="{{ category.icon }}">
+                        <small class="text-muted">Use Font Awesome icon names without 'fa-' prefix</small>
+                    </div>
+                    <div class="form-check mb-4">
+                        <input type="checkbox" id="is_active" name="is_active" class="form-check-input" {% if category.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="is_active">Active</label>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="admin-btn admin-btn-primary admin-btn-lg flex-grow-1" style="justify-content:center;">
+                            <i class="fas fa-save"></i> {% if category %}Update{% else %}Create{% endif %} Category
+                        </button>
+                        <a href="{% url 'dashboard:categories' %}" class="admin-btn admin-btn-secondary admin-btn-lg">Cancel</a>
+                    </div>
+        </form>
+    </div>
+</div>
+
+{% if category %}
+<!-- Category Items -->
+<div class="admin-card mt-4">
+    <div class="admin-card-header">
+        <h5><i class="fas fa-utensils me-2"></i>Items in this Category</h5>
+        <a href="{% url 'dashboard:add_menu_item' %}?category={{ category.id }}" class="admin-btn admin-btn-sm admin-btn-outline" style="color:white; border-color:rgba(255,255,255,0.3);">
+            <i class="fas fa-plus"></i> Add Item
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td>₱{{ item.price }}</td>
+                    <td>
+                        {% if item.is_available %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-danger">Out of Stock</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'dashboard:edit_menu_item' item.pk %}" class="admin-btn admin-btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'dashboard:delete_menu_item' item.pk %}" class="admin-btn admin-btn-danger" onclick="return confirmDelete('Delete this item?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <i class="fas fa-utensils"></i>
+                            <p>No items in this category yet.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
